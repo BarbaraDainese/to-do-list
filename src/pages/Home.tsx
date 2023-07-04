@@ -16,10 +16,11 @@ import { useForm } from "react-hook-form";
 // import { Container } from './styles';
 
 const Home: React.FC = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch, reset } = useForm();
+  console.log("taskName");
 
   const [task, setTask] = useState("");
-  const [editedItem, setEditedItem] = useState('')
+  const [editedItem, setEditedItem] = useState("");
 
   const [taskList, setTaskList] = useState<Item[]>([
     { name: "Cortar cabelo" },
@@ -30,23 +31,21 @@ const Home: React.FC = () => {
   const onSubmit = (data: any) => {
     console.log(data);
     let newList = [...taskList];
-    newList.push({ name: data.task });
+    newList.push({ name: data.taskName });
     setTaskList(newList);
-    setTask("");
+    setTask(data.taskName);
   };
 
-   const handleDelete = (item: Item) => {
-    let deletedList = taskList.filter((i)=>{
+  const handleDelete = (item: Item) => {
+    let deletedList = taskList.filter((i) => {
       return i !== item;
     });
     setTaskList(deletedList);
-   };
+  };
 
-   const handleEdit = (item: Item) =>{
+  const handleEdit = (item: Item) => {
     setEditedItem(item.name);
-    
-   }
-   
+  };
 
   // const handleDelete = (item: Item) => {
   //   let deletedList = [] as Item[];
@@ -74,8 +73,6 @@ const Home: React.FC = () => {
   // let aprovados = 0;
   // let reprovados = 0;
 
-
-
   // for (var n in notas){
   //   console.log(notas[n])
   // };
@@ -97,7 +94,7 @@ const Home: React.FC = () => {
         <FormControl>
           <FormLabel>Tarefa</FormLabel>
 
-          <Input {...register("task")} type="text" />
+          <Input {...register("taskName")} type="text" />
           <Button type="submit">Salvar</Button>
         </FormControl>
       </form>
@@ -120,7 +117,7 @@ const Home: React.FC = () => {
               size="xs"
               onClick={() => handleEdit(item)}
             >
-              <EditIcon/>
+              <EditIcon />
             </Button>
           </ListItem>
         ))}
