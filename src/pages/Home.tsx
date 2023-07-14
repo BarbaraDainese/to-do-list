@@ -16,10 +16,9 @@ import { useForm } from "react-hook-form";
 // import { Container } from './styles';
 
 const Home: React.FC = () => {
-  const { register, handleSubmit, watch, reset } = useForm();
+  const { register, handleSubmit, resetField, setValue } = useForm();
   console.log("taskName");
 
-  const [task, setTask] = useState("");
   const [editedItem, setEditedItem] = useState("");
 
   const [taskList, setTaskList] = useState<Item[]>([
@@ -29,11 +28,23 @@ const Home: React.FC = () => {
   ]);
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    let newList = [...taskList];
-    newList.push({ name: data.taskName });
-    setTaskList(newList);
-    setTask(data.taskName);
+    console.log(data, editedItem);
+    if (editedItem) {
+      taskList.filter(editedItem);
+    } else {
+      let newList = [...taskList];
+      newList.push({ name: data.taskName });
+      setTaskList(newList);
+      resetField("taskName");
+    }
+    if (editedItem !== "") {
+      taskList.map((task, index) => {
+        if (task.name === editedItem) {
+          taskList[index] = data.taskName;
+        }
+      });
+      console.log(data.taskName);
+    }
   };
 
   const handleDelete = (item: Item) => {
@@ -43,8 +54,9 @@ const Home: React.FC = () => {
     setTaskList(deletedList);
   };
 
-  const handleEdit = (item: Item) => {
+  const handleEdit = (item: Item, index: number) => {
     setEditedItem(item.name);
+    setValue("taskName", item.name);
   };
 
   // const handleDelete = (item: Item) => {
@@ -94,7 +106,7 @@ const Home: React.FC = () => {
         <FormControl>
           <FormLabel>Tarefa</FormLabel>
 
-          <Input {...register("taskName")} type="text" />
+          <Input {...register("taskName", { required: true })} type="text" />
           <Button type="submit">Salvar</Button>
         </FormControl>
       </form>
@@ -115,7 +127,7 @@ const Home: React.FC = () => {
               colorScheme="teal"
               variant="solid"
               size="xs"
-              onClick={() => handleEdit(item)}
+              onClick={() => handleEdit(item, index)}
             >
               <EditIcon />
             </Button>
