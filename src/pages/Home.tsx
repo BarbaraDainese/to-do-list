@@ -1,9 +1,12 @@
 import {
   Button,
+  Checkbox,
+  Flex,
   FormControl,
   FormHelperText,
   FormLabel,
   Input,
+  Stack,
 } from "@chakra-ui/react";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -17,7 +20,7 @@ import { useForm } from "react-hook-form";
 
 const Home: React.FC = () => {
   const { register, handleSubmit, resetField, setValue } = useForm();
-  console.log("taskName");
+  //console.log("taskName");
 
   const [editedItem, setEditedItem] = useState("");
 
@@ -27,23 +30,40 @@ const Home: React.FC = () => {
     { name: "Comprar pão" },
   ]);
 
+  const [isNaoConcluido, setIsNaoConcluido] = useState(false);
+  const [isConcluido, setIsConcluido] = useState(false);
+
+  const handleNaoConcluidoChange = () => {
+    setIsNaoConcluido(true);
+    setIsConcluido(false);
+  };
+
+  const handleConcluidoChange = () => {
+    setIsConcluido(true);
+    setIsNaoConcluido(false);
+  };
+
   const onSubmit = (data: any) => {
-    console.log(data, editedItem);
-    if (editedItem) {
-      taskList.filter(editedItem);
+    //console.log(data, editedItem);
+
+    if (editedItem !== "") {
+      const newTaskList = taskList.map((task) => {
+        if (task.name === editedItem) {
+          return { name: data.taskName };
+        }
+        return { name: task.name };
+      });
+      setTaskList(newTaskList);
+      resetField("taskName");
+      setEditedItem("");
+
+      console.log(taskList);
+      console.log(newTaskList);
     } else {
       let newList = [...taskList];
       newList.push({ name: data.taskName });
       setTaskList(newList);
       resetField("taskName");
-    }
-    if (editedItem !== "") {
-      taskList.map((task, index) => {
-        if (task.name === editedItem) {
-          taskList[index] = data.taskName;
-        }
-      });
-      console.log(data.taskName);
     }
   };
 
@@ -112,26 +132,44 @@ const Home: React.FC = () => {
       </form>
       <OrderedList>
         {taskList.map((item, index) => (
-          <ListItem key={index}>
-            {item.name}
-            <Button
-              colorScheme="teal"
-              variant="solid"
-              size="xs"
-              onClick={() => handleDelete(item)}
-            >
-              <DeleteIcon />
-            </Button>
+          <Flex width="100%" gap="8" justifyContent="space-between">
+            <ListItem key={index}>
+              {item.name}
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                size="xs"
+                onClick={() => handleDelete(item)}
+              >
+                <DeleteIcon />
+              </Button>
 
-            <Button
-              colorScheme="teal"
-              variant="solid"
-              size="xs"
-              onClick={() => handleEdit(item, index)}
-            >
-              <EditIcon />
-            </Button>
-          </ListItem>
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                size="xs"
+                onClick={() => handleEdit(item, index)}
+              >
+                <EditIcon />
+              </Button>
+            </ListItem>
+            <Flex direction="row" alignContent="end" alignItems="flex-end">
+              <Checkbox
+                colorScheme="red"
+                checked={isNaoConcluido}
+                onChange={handleNaoConcluidoChange}
+              >
+                Não concluída
+              </Checkbox>
+              <Checkbox
+                colorScheme="green"
+                checked={isNaoConcluido}
+                onChange={handleNaoConcluidoChange}
+              >
+                Concluída
+              </Checkbox>
+            </Flex>
+          </Flex>
         ))}
       </OrderedList>
 
