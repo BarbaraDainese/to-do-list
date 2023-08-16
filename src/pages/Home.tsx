@@ -25,22 +25,25 @@ const Home: React.FC = () => {
   const [editedItem, setEditedItem] = useState("");
 
   const [taskList, setTaskList] = useState<Item[]>([
-    { name: "Cortar cabelo" },
-    { name: "Levar cachorro para passear" },
-    { name: "Comprar pão" },
+    { name: "Cortar cabelo", isChecked: false },
+    { name: "Levar cachorro para passear", isChecked: true },
+    { name: "Comprar pão", isChecked: false },
   ]);
 
-  const [isNaoConcluido, setIsNaoConcluido] = useState(false);
   const [isConcluido, setIsConcluido] = useState(false);
 
-  const handleNaoConcluidoChange = () => {
-    setIsNaoConcluido(true);
-    setIsConcluido(false);
+  const handleNaoConcluidoChange = (item: string) => {
+    const updatedTask = taskList.map((task) =>
+      task.name === item ? { ...task, isChecked: false } : task
+    );
+    setTaskList(updatedTask);
   };
 
-  const handleConcluidoChange = () => {
-    setIsConcluido(true);
-    setIsNaoConcluido(false);
+  const handleConcluidoChange = (item: string) => {
+    const updatedTask = taskList.map((task) =>
+      task.name === item ? { ...task, isChecked: true } : task
+    );
+    setTaskList(updatedTask);
   };
 
   const onSubmit = (data: any) => {
@@ -49,9 +52,9 @@ const Home: React.FC = () => {
     if (editedItem !== "") {
       const newTaskList = taskList.map((task) => {
         if (task.name === editedItem) {
-          return { name: data.taskName };
+          return { name: data.taskName, isChecked: false };
         }
-        return { name: task.name };
+        return { name: task.name, isChecked: false };
       });
       setTaskList(newTaskList);
       resetField("taskName");
@@ -61,7 +64,7 @@ const Home: React.FC = () => {
       console.log(newTaskList);
     } else {
       let newList = [...taskList];
-      newList.push({ name: data.taskName });
+      newList.push({ name: data.taskName, isChecked: false });
       setTaskList(newList);
       resetField("taskName");
     }
@@ -156,15 +159,15 @@ const Home: React.FC = () => {
             <Flex direction="row" alignContent="end" alignItems="flex-end">
               <Checkbox
                 colorScheme="red"
-                checked={isNaoConcluido}
-                onChange={handleNaoConcluidoChange}
+                isChecked={!item.isChecked}
+                onChange={() => handleNaoConcluidoChange(item.name)}
               >
                 Não concluída
               </Checkbox>
               <Checkbox
                 colorScheme="green"
-                checked={isNaoConcluido}
-                onChange={handleNaoConcluidoChange}
+                isChecked={item.isChecked}
+                onChange={() => handleConcluidoChange(item.name)}
               >
                 Concluída
               </Checkbox>
